@@ -1,8 +1,8 @@
-module Main where
+module Client.Main where
 
 import Prelude
 
-import App.Game as Game
+import Client.Game as Game
 import Effect (Effect)
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
@@ -11,7 +11,7 @@ import Affjax.ResponseFormat as AR
 import Data.Either (either, Either)
 import Effect.Class.Console (logShow)
 import Effect.Class (class MonadEffect, liftEffect)
-import App.MapData (parse)
+import Client.MapData (parse)
 import Effect.Exception (throw)
 import Data.Map as M
 

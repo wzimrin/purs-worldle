@@ -1,4 +1,4 @@
-module App.MapData where
+module Client.MapData where
 
 import Prelude
 

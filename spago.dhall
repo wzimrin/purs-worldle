@@ -12,7 +12,8 @@ to generate this file without the comments in this block.
 -}
 { name = "purs-worldle-client"
 , dependencies =
-  [ "affjax"
+  [ "aff"
+  , "affjax"
   , "affjax-web"
   , "argonaut-codecs"
   , "argonaut-core"
@@ -22,12 +23,14 @@ to generate this file without the comments in this block.
   , "either"
   , "exceptions"
   , "halogen"
+  , "lists"
   , "maybe"
   , "ordered-collections"
   , "prelude"
+  , "purescript-payload"
   , "strings"
   , "tuples"
   ]
-, packages = ../packages.dhall
+, packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }

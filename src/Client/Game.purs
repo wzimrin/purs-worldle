@@ -1,4 +1,4 @@
-module App.Game where
+module Client.Game where
 
 import Prelude
 import Halogen as H

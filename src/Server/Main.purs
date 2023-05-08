@@ -1,4 +1,4 @@
-module Main where
+module Server.Main where
 
 import Prelude
 
@@ -45,13 +45,13 @@ getMessages { params: { id }, query: { limit } } = pure
   [ { id: 1, text: "Hey " <> show id }, { id: 2, text: "Limit " <> show limit } ]
 
 public :: { params :: { path :: List String } } -> Aff (Either Response.Failure Handlers.File)
-public { params: { path } } = Handlers.directory "../client/public" path
+public { params: { path } } = Handlers.directory "public" path
 
 js :: { params :: { path :: List String } } -> Aff (Either Response.Failure Handlers.File)
-js { params: { path } } = Handlers.directory "../client/dist" path
+js { params: { path } } = Handlers.directory "dist" path
 
 index :: {} -> Aff Handlers.File
-index _ = Handlers.file "../client/public/index.html" {}
+index _ = Handlers.file "public/index.html" {}
 
 main :: Effect Unit
 main = Payload.launch spec handlers

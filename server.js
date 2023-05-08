@@ -1,6 +1,6 @@
 "use strict";
 
-import * as Main from "./output/Main/index.js";
+import * as Main from "./output/Server.Main/index.js";
 
 function main() {
   /*
