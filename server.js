@@ -2,7 +2,7 @@
 
 import * as Main from "./output/Server.Main/index.js";
 
-function main() {
+async function main() {
   /*
     Here we could add variables such as
 
