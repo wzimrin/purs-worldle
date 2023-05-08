@@ -1,0 +1,14 @@
+{
+  "name": "purs-worldle-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "spago build",
+    "test": "spago test",
+    "watch": "parcel watch dev/index.js",
+    "build-prod": "rm -rf prod && mkdir -p prod && cp dev/index.html prod/ && spago bundle-app --to prod/index.js && parcel build prod/index.html"
+  },
+  "keywords": [],
+  "dependencies": {}
+}

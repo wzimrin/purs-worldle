@@ -1,17 +1,6 @@
 {
   "name": "purs-worldle",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build-client": "cd client && spago build",
-    "test-client": "cd client && spago test",
-    "serve-client": "cd client && parcel dev/index.html --open",
-    "build-prod-client": "cd client && rm -rf prod && mkdir -p prod && cp dev/index.html prod/ && spago bundle-app --to prod/index.js && parcel build prod/index.html"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {},
   "dependencies": {
     "esbuild": "^0.17.18",
     "parcel": "^2.8.3",
@@ -19,5 +8,12 @@
     "purs-tidy": "^0.9.3",
     "spago": "^0.21.0",
     "xhr2": "^0.2.1"
-  }
+  },
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "client/",
+    "server/"
+  ]
 }

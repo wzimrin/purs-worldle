@@ -11,7 +11,15 @@ When creating a new Spago project, you can use
 to generate this file without the comments in this block.
 -}
 { name = "purs-worldle-server"
-, dependencies = [ "aff", "console", "effect", "prelude", "purescript-payload" ]
+, dependencies =
+  [ "aff"
+  , "console"
+  , "effect"
+  , "either"
+  , "lists"
+  , "prelude"
+  , "purescript-payload"
+  ]
 , packages = ../packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }

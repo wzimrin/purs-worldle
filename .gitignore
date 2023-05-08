@@ -1,3 +1,4 @@
+.DS_Store
 bower_components/
 node_modules/
 .pulp-cache/
@@ -9,3 +10,4 @@ generated-docs/
 .psa*
 .spago
 .parcel-cache
+dist/

@@ -11,7 +11,23 @@ When creating a new Spago project, you can use
 to generate this file without the comments in this block.
 -}
 { name = "purs-worldle-client"
-, dependencies = [ "console", "effect", "halogen", "prelude" ]
+, dependencies =
+  [ "affjax"
+  , "affjax-web"
+  , "argonaut-codecs"
+  , "argonaut-core"
+  , "arrays"
+  , "console"
+  , "effect"
+  , "either"
+  , "exceptions"
+  , "halogen"
+  , "maybe"
+  , "ordered-collections"
+  , "prelude"
+  , "strings"
+  , "tuples"
+  ]
 , packages = ../packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }

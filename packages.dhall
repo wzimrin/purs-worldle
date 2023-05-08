@@ -151,4 +151,5 @@ in  upstream
     , repo = "https://github.com/hoodunit/purescript-payload"
     , version = "b2b7d7c1ae82d2f745cb8470f39ed9dc12da8a89"
     }
+  with purs-worldle-core = ./core/spago.dhall as Location
 
