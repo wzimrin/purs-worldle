@@ -14,10 +14,12 @@ import Halogen.HTML.Events as HE
 import Shared.API as API
 import Shared.MapData (Properties)
 import Shared.Utils as Utils
+import Client.Map as CMap
+import Type.Proxy (Proxy(..))
 
 type State =
   { countries :: Maybe (Map String Properties)
-  , target :: Maybe String
+  , target :: Maybe Properties
   , count :: Int
   }
 
@@ -25,6 +27,10 @@ data Action
   = Increment
   | Initialize
   | Restart
+
+type Slots = (map :: forall query. H.Slot query Void Int)
+
+_map = Proxy :: Proxy "map"
 
 component :: forall q i o m. MonadAff m => H.Component q i o m
 component =
@@ -34,16 +40,17 @@ component =
     , eval: H.mkEval H.defaultEval { handleAction = handleAction, initialize = Just Initialize }
     }
 
-render :: forall cs m. State -> H.ComponentHTML Action cs m
+render :: forall m. MonadAff m => State -> H.ComponentHTML Action Slots m
 render { target: Just target, count } =
   HH.div_
-    [ HH.p_
+    [ HH.slot_ _map 0 CMap.component target
+    , HH.p_
         [ HH.text $ "You clicked " <> show count <> " times" ]
     , HH.button
         [ HE.onClick \_ -> Increment ]
         [ HH.text "Click me" ]
     , HH.p_
-        [ HH.text $ "Target is " <> target ]
+        [ HH.text $ "Target is " <> target.cntry_name ]
     ]
 render _ = HH.div_ [ HH.text "Loading ..." ]
 
@@ -51,7 +58,8 @@ handleAction :: forall cs o m. MonadAff m => Action -> H.HalogenM State Action c
 handleAction Increment = H.modify_ \st -> st { count = st.count + 1 }
 handleAction Restart = H.get >>= case _ of
   { countries: Just countries } -> do
-    target <- H.liftEffect $ Utils.randomElement $ Array.fromFoldable $ Map.keys countries
+    target <- H.liftEffect $ Utils.randomElement $ Array.fromFoldable $ Map.values countries
+    --target <- H.liftEffect $ maybe (throw "no countries") pure $ Map.lookup "Russia" countries
     H.modify_ \st -> st { target = Just target }
   _ -> pure unit
 handleAction Initialize = do

@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Array as Array
 import Data.Either (Either, either)
-import Data.Maybe (maybe)
+import Data.Maybe (Maybe, maybe)
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Exception (throw)
@@ -12,6 +12,9 @@ import Effect.Random as Random
 
 throwOnError :: forall m a b. MonadEffect m => (a -> String) -> Either a b -> m b
 throwOnError toString = either (liftEffect <<< throw <<< toString) pure
+
+throwOnNothing :: forall m a. MonadEffect m => String -> Maybe a -> m a
+throwOnNothing msg = maybe (liftEffect $ throw msg) pure
 
 foreign import debug :: forall a b. a -> b -> b
 
