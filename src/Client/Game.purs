@@ -2,31 +2,31 @@ module Client.Game where
 
 import Prelude
 
-import Data.Array as Array
-import Data.Map (Map)
-import Data.Map as Map
+import Client.GameC
+  ( Action(..)
+  , PastGuess
+  , State
+  , gameOver
+  , gameWon
+  , getGuess
+  , getPastGuesses
+  , getPossibleGuesses
+  , getTarget
+  , guessCount
+  , guessIsValid
+  , handleAction
+  , mkInitialState
+  )
+import Client.HtmlUtils (classes)
+import Client.Map as CMap
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
-import Shared.API as API
+import Halogen.HTML.Properties as HP
 import Shared.MapData (Properties)
-import Shared.Utils as Utils
-import Client.Map as CMap
 import Type.Proxy (Proxy(..))
-
-type State =
-  { countries :: Maybe (Map String Properties)
-  , target :: Maybe Properties
-  , count :: Int
-  }
-
-data Action
-  = Increment
-  | Initialize
-  | Restart
 
 type Slots = (map :: forall query. H.Slot query Void Int)
 
@@ -35,37 +35,59 @@ _map = Proxy :: Proxy "map"
 component :: forall q i o m. MonadAff m => H.Component q i o m
 component =
   H.mkComponent
-    { initialState: \_ -> { count: 0, countries: Nothing, target: Nothing }
+    { initialState: mkInitialState
     , render
     , eval: H.mkEval H.defaultEval { handleAction = handleAction, initialize = Just Initialize }
     }
 
-render :: forall m. MonadAff m => State -> H.ComponentHTML Action Slots m
-render { target: Just target, count } =
-  HH.div_
-    [ HH.slot_ _map 0 CMap.component target
-    , HH.p_
-        [ HH.text $ "You clicked " <> show count <> " times" ]
-    , HH.button
-        [ HE.onClick \_ -> Increment ]
-        [ HH.text "Click me" ]
-    , HH.p_
-        [ HH.text $ "Target is " <> target.cntry_name ]
-    ]
-render _ = HH.div_ [ HH.text "Loading ..." ]
+renderPastGuess :: forall w i. PastGuess -> HH.HTML w i
+renderPastGuess { guess, distance, direction } =
+  HH.div_ [ HH.text $ guess <> " " <> show distance <> " " <> direction ]
 
-handleAction :: forall cs o m. MonadAff m => Action -> H.HalogenM State Action cs o m Unit
-handleAction Increment = H.modify_ \st -> st { count = st.count + 1 }
-handleAction Restart = H.get >>= case _ of
-  { countries: Just countries } -> do
-    target <- H.liftEffect $ Utils.randomElement $ Array.fromFoldable $ Map.values countries
-    --target <- H.liftEffect $ maybe (throw "no countries") pure $ Map.lookup "Russia" countries
-    H.modify_ \st -> st { target = Just target }
-  _ -> pure unit
-handleAction Initialize = do
-  countries <- map Utils.debug_ $ H.liftAff API.getCountries
-  let countriesMap = Map.fromFoldable $ map toTuple countries
-  H.modify_ \st -> st { countries = Just countriesMap }
-  handleAction Restart
+renderPossibleGuess :: forall w. String -> HH.HTML w Action
+renderPossibleGuess guess = HH.div [ HE.onClick \_ -> SetGuess guess ] [ HH.text guess ]
+
+guesser :: forall w. State -> HH.HTML w Action
+guesser state =
+  HH.div_
+    [ HH.div_
+        [ HH.input [ HP.type_ HP.InputText, HP.value $ getGuess state, HE.onValueInput SetGuess ]
+        , HH.button
+            [ HE.onClick \_ -> FinalizeGuess, HP.disabled $ not $ guessIsValid state ]
+            [ HH.text "Guess" ]
+        ]
+    , HH.div_ $ map renderPossibleGuess $ getPossibleGuesses state
+    ]
+
+gameFinished :: forall w. State -> Properties -> HH.HTML w Action
+gameFinished state target =
+  HH.div_
+    [ HH.p_
+        [ HH.text $ "You " <> (if gameWon state then "won" else "lost") <> " in "
+            <> show (guessCount state)
+            <> " guesses!"
+        ]
+    , HH.p_ [ HH.text $ "The answer was " <> target.cntry_name ]
+    ]
+
+gameStateButton :: forall w. State -> HH.HTML w Action
+gameStateButton state = HH.button [ HE.onClick \_ -> action ] [ HH.text text ]
   where
-  toTuple properties = Tuple properties.cntry_name properties
+  { action, text } =
+    if gameOver state then { action: Restart, text: "Restart" }
+    else { action: GiveUp, text: "GiveUp" }
+
+render :: forall m. MonadAff m => State -> H.ComponentHTML Action Slots m
+render state = HH.div [ classes [ "container" ] ]
+  [ case getTarget state of
+      Nothing -> HH.div_ [ HH.text "Loading ..." ]
+      Just target -> HH.div [ classes [ "game" ] ]
+        [ HH.div [ classes [ "gameStateButton" ] ] [ gameStateButton state ]
+        , HH.slot_ _map 0 CMap.component target
+        , HH.div [ classes [ "gameMain" ] ]
+            [ HH.div [ classes [ "pastGuesses" ] ] $ map renderPastGuess $ getPastGuesses state
+            , HH.div [ classes [ "playArea" ] ]
+                [ if gameOver state then gameFinished state target else guesser state ]
+            ]
+        ]
+  ]

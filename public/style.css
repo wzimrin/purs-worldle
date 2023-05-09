@@ -1,0 +1,20 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game {
+}
+
+.gameStateButton {
+}
+
+.gameMain {
+}
+
+.pastGuesses {
+}
+
+.playArea {
+}
