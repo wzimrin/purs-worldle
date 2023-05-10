@@ -109,7 +109,7 @@ restartGame :: forall cs o m. MonadAff m => H.HalogenM State Action cs o m Unit
 restartGame = H.get >>= case _ of
   { countries: Just countries } -> do
     target <- H.liftEffect $ Utils.randomElement $ Array.fromFoldable $ Map.keys countries
-    --let target = "France"
+    --let target = "New Caledonia and Dependencies"
     H.modify_ _ { target = Just target, guess = "", pastGuesses = Nil, gameOver = false }
   _ -> pure unit
 

@@ -41,7 +41,7 @@ component =
     }
 
 render :: forall cs m. State -> H.ComponentHTML Action cs m
-render _ = HH.div_ [ HH.canvas [ HP.id "mapCanvas" ] ]
+render _ = HH.canvas [ HP.id "mapCanvas" ]
 
 handleAction :: forall cs o m. MonadAff m => Action -> H.HalogenM State Action cs o m Unit
 handleAction Initialize = do
@@ -63,7 +63,7 @@ drawMap country countryData = do
   height <- H.liftEffect $ getCanvasHeight canvas
   H.liftEffect $ clearRect context { x: 0.0, y: 0.0, width, height }
   H.liftEffect $ setFillStyle context "black"
-  H.liftEffect $ traverse_ (drawShape context) $ Math.mapOf country countryData 300.0 150.0
+  H.liftEffect $ traverse_ (drawShape context) $ Math.mapOf country countryData width height
   pure unit
 
 foreign import drawShape :: Context2D -> Math.Shape -> Effect Unit
